@@ -6,7 +6,6 @@
       color="red"
       dark
     >
-     <router-view></router-view>
       <div class="d-flex align-center">
         <v-img
           alt="Logo"
@@ -26,25 +25,23 @@
     </v-app-bar>
 
     <v-main>
-      <SearchGit/>
+      <homepage/>
+      <searchtool/>
     </v-main>
-
-   
-
 
   </v-app>
 </template>
 
-
-
 <script>
-import SearchGit from './components/SearchGit';
+import homepage from './components/homepage';
+import searchtool from './components/searchtool';
 
 export default {
   name: 'App',
 
   components: {
-    SearchGit,
+    homepage,
+    searchtool,
   },
 
   data: () => ({
