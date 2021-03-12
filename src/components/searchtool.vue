@@ -36,18 +36,20 @@
         </div>
     </v-container>
 
-    <v-data-table light calculate-widths v-else
-        :headers="headers"
-        :items="repos"
-        :items-per-page="10"
-        class="elevation-1"
-        item-key="name"
+        <v-data-table light calculate-widths v-else
+            :headers="headers"
+            :items="repos"
+            :items-per-page="10"
+            class="elevation-1"
+            item-key="name"
         ></v-data-table>
     </v-container>
 </template>
 
 
 <script>
+
+
 import axios from 'axios'
 export default {
     data () {
@@ -55,6 +57,7 @@ export default {
             api_url: '',
             repos: [],
             loading: true,
+            input: '',
             headers: [
             {
                 text: 'Repo Name',
@@ -62,23 +65,32 @@ export default {
                 value: 'name',
             },
             {
+                text: 'Owner Name',
+                value: 'owner.login',
+            },
+            {
                 text: 'URL',
                 value: 'html_url'
             },
+            {
+                text: 'Description (100 chars)',
+                value: 'description'
+            },
+            {
+                text: 'Language',
+                value: 'language'
+            },
+            {
+                text: 'Watcher Count',
+                value: 'watchers_count'
+            },
+            {
+                text: 'Fork Count',
+                value: 'forks_count'
+            },
+            
             ]
         }
-    },
-    mounted () {
-    axios
-      .get(this.api_url)
-      .then(response => {
-          this.repos = response.data.items
-          this.loading = false
-          console.log(response)
-      })
-      .catch(error => {
-        console.log(error)
-      })
     },
     methods: {
     search(){
@@ -99,8 +111,14 @@ export default {
                 .get(this.api_url)
                 .then(response => {
                     this.repos = response.data.items
+                    var i = 0
+                    for (i=0; i < this.repos.length; i++){
+                        console.log(this.repos[i].description);
+                        if (this.repos[i].description.length > 100){
+                            this.repos[i].description = this.repos[i].description.substr(0,100);
+                        }
+                    }
                     this.loading = false
-                    console.log(response)
                 })
                 .catch(error => {
                     console.log(error)
