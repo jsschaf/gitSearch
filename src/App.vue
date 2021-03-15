@@ -38,7 +38,9 @@ import searchtool from './components/searchtool';
 
 export default {
   name: 'App',
-
+  created () {
+            document.title = "GitSearch";
+        },
   components: {
     homepage,
     searchtool,
