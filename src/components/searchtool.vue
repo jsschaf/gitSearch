@@ -165,4 +165,7 @@ export default {
   .v-progress-circular {
     margin: 1rem
   }
+  .v-data-table-header th {
+  white-space: nowrap;
+}
 </style>
