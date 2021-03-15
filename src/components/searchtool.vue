@@ -18,8 +18,29 @@
             @click="search">
             Search
             </v-btn>
+
           </template>
+
         </v-text-field>
+        
+        <v-row
+            justify="space-around">
+        <v-checkbox
+                v-model="inTitle"
+                :label="`In Title`"
+        ></v-checkbox>
+        <v-checkbox
+                v-model="inDesc"
+                :label="`In Description`"
+        ></v-checkbox>
+        <v-checkbox
+                v-model="inRead"
+                :label="`In ReadMe`"
+        ></v-checkbox>
+
+        </v-row>
+
+        Note: If no checkboxes are selected, the repository name and description are searched.
     
     <v-container v-if="api_url === ''">
         
@@ -39,9 +60,9 @@
         <v-data-table light calculate-widths v-else
             :headers="headers"
             :items="repos"
-            :items-per-page="10"
+            :items-per-page="20"
             class="elevation-1"
-            item-key="name"
+            item-key="id"
         ></v-data-table>
     </v-container>
 </template>
@@ -58,6 +79,9 @@ export default {
             repos: [],
             loading: true,
             input: '',
+            inTitle: 'true',
+            inDesc: 'true',
+            inRead: 'true',
             headers: [
             {
                 text: 'Repo Name',
@@ -94,7 +118,7 @@ export default {
     },
     methods: {
     search(){
-			console.log(this.input)
+            this.loading=true;
             var string = 'https://api.github.com/search/repositories?q='
             var query = this.input.split(" ")
             var i = 0
@@ -102,28 +126,37 @@ export default {
                 if (i > 0){
                     string += "+";
                 }
-                string += "topic:" + query[i];
+                string += query[i];
             }
 
+            if (this.inTitle) string += "+in:name"
+            if (this.inDesc) string += "+in:description"
+            if (this.inRead) string += "+in:readme"
+
             this.api_url = string
-            console.log(string)
-            axios
-                .get(this.api_url)
-                .then(response => {
-                    this.repos = response.data.items
-                    var i = 0
-                    for (i=0; i < this.repos.length; i++){
-                        console.log(this.repos[i].description);
-                        if (this.repos[i].description.length > 100){
-                            this.repos[i].description = this.repos[i].description.substr(0,100);
+            if (!this.input){
+                this.repos = [{}]
+                this.loading=false
+            }
+           // all checkboxes true
+           else{
+                axios
+                    .get(this.api_url)
+                    .then(response => {
+                        this.repos = response.data.items
+                        var i = 0
+                        for (i=0; i < this.repos.length; i++){
+                            this.repos[i].id = i
+                            if (this.repos[i].description && this.repos[i].description.length > 100){
+                                this.repos[i].description = this.repos[i].description.substr(0,100);
+                            }
                         }
-                    }
-                    this.loading = false
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-            
+                        this.loading = false
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+           }
         }
     }
 }
